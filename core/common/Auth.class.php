@@ -273,7 +273,7 @@ class Auth extends CodonData {
         }*/
 
         //ok now check it
-        $hash = md5($password . $userinfo->salt);
+	$hash = password_verify($password, $userinfo->password);
 
         if ($hash == $userinfo->password) {
             
