@@ -52,30 +52,7 @@ class RegistrationData extends CodonData {
         return DB::get_row($sql);
     }
 
-    /**
-     * Add a  User
-     * 
-     * $data = array(
-     * 'firstname' => '',
-     * 'lastname' => '',
-     * 'email' => '',
-     * 'password' => '',
-     * 'code' => '',
-     * 'location' => '',
-     * 'hub' => '',
-     * 'confirm' => false);
-     */
     public static function addUser($data) {
-
-        /*$data = array(
-        'firstname' => '',
-        'lastname' => '',
-        'email' => '',
-        'password' => '',
-        'code' => '',
-        'location' => '',
-        'hub' => '',
-        'confirm' => false);*/
 
         $exists = self::CheckUserEmail($data['email']);
         if (is_object($exists)) {
@@ -83,32 +60,23 @@ class RegistrationData extends CodonData {
             return false;
         }
 
-        //Set the password, add some salt
-        $salt = md5(date('His'));
-        $password = md5($data['password'] . $salt);
-
-        //Stuff it into here, the confirmation email will use it.
-        self::$salt = $salt;
-
+	$password = password_hash($data['password'], PASSWORD_DEFAULT);	    
+	    
         $code = DB::escape(strtoupper($data['code']));
         $firstname = DB::escape(ucwords($data['firstname']));
         $lastname = DB::escape(ucwords($data['lastname']));
         $location = DB::escape(strtoupper($data['location']));
+        $uniqid = md5($code.$firstname.$lastname.$location);
         //Add this stuff in
 
         if ($data['confirm'] === true) $confirm = 1;
         else  $confirm = 0;
 
-        $sql = "INSERT INTO " . TABLE_PREFIX . "pilots (firstname, lastname, email,
-					code, location, hub, password, salt, confirmed, joindate, lastip)
-				  VALUES (
-                    '{$firstname}', '{$lastname}', '{$data['email']}', '{$code}',
-					'{$location}', '{$data['hub']}', '{$password}', 
-                    '{$salt}', {$confirm}, NOW(), 
-                    '{$_SERVER['REMOTE_ADDR']}'
-                    )";
-
-
+        $sql = "INSERT INTO " . TABLE_PREFIX . "pilots (uniqid, firstname, lastname, email,
+					code, location, hub, password, confirmed, joindate, lastip)
+				VALUES ('{$uniqid}', '{$firstname}', '{$lastname}', '{$data['email']}', '{$code}',
+					'{$location}', '{$data['hub']}', '{$password}', {$confirm}, NOW(), '{$_SERVER['REMOTE_ADDR']}')";
+	    
         $res = DB::query($sql);
         if (DB::errno() != 0) {
             if (DB::errno() == 1062) {
@@ -170,22 +138,13 @@ class RegistrationData extends CodonData {
         return true;
     }
 
-    /**
-     * RegistrationData::ChangePassword()
-     * 
-     * @param mixed $pilotid
-     * @param mixed $newpassword
-     * @return
-     */
     public static function ChangePassword($pilotid, $newpassword) {
-        $salt = md5(date('His'));
-        $password = md5($newpassword . $salt);
-        self::$salt = $salt;
 
+        $hashedpassword = password_hash($newpassword, PASSWORD_DEFAULT);
+	    
         //, confirmed='y'
         $sql = "UPDATE " . TABLE_PREFIX . "pilots 
-				SET password='$password', 
-					salt='$salt'
+				SET password='$hashedpassword', 
 				WHERE pilotid=$pilotid";
 
         $res = DB::query($sql);
@@ -195,15 +154,6 @@ class RegistrationData extends CodonData {
         return true;
     }
 
-    /**
-     * RegistrationData::SendEmailConfirm()
-     * 
-     * @param mixed $email
-     * @param mixed $firstname
-     * @param mixed $lastname
-     * @param string $newpw
-     * @return void
-     */
     public static function SendEmailConfirm($email, $firstname, $lastname, $newpw = '') {
         
         $confid = self::$salt;
@@ -226,11 +176,6 @@ class RegistrationData extends CodonData {
         Util::sendEmail($email, $subject, $message);
     }
 
-    /**
-     * RegistrationData::ValidateConfirm()
-     * 
-     * @return
-     */
     public static function ValidateConfirm() {
         $confid = Vars::GET('confirmid');
 
