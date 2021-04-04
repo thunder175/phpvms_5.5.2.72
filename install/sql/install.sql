@@ -311,14 +311,14 @@ CREATE TABLE `phpvms_pages` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `phpvms_pilots` (
   `pilotid` int(11) NOT NULL AUTO_INCREMENT,
+  `uniqid` varchar(25) NOT NULL DEFAULT '',
   `firstname` varchar(25) NOT NULL DEFAULT '',
   `lastname` varchar(25) NOT NULL DEFAULT '',
   `email` varchar(100) NOT NULL DEFAULT '',
   `code` char(3) NOT NULL DEFAULT '',
   `location` varchar(32) NOT NULL DEFAULT '',
   `hub` varchar(4) NOT NULL DEFAULT '',
-  `password` varchar(32) NOT NULL DEFAULT '',
-  `salt` varchar(32) NOT NULL DEFAULT '',
+  `password` varchar(255) NOT NULL DEFAULT '',
   `bgimage` varchar(30) NOT NULL DEFAULT '',
   `lastlogin` date NOT NULL DEFAULT '1970-01-01',
   `totalflights` int(11) NOT NULL DEFAULT '0',
