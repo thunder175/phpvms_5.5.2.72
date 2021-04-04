@@ -259,7 +259,7 @@ class Profile extends CodonModule
 		}
 
 		// Change
-		$hash = md5($this->post->oldpassword . Auth::$pilot->salt);
+        	$hash = password_verify($this->post->oldpassword, Auth::$pilot->password);
 
 		if($hash == Auth::$pilot->password) {
 			RegistrationData::ChangePassword(Auth::$pilotid, $_POST['password1']);
