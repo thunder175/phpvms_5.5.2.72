@@ -67,11 +67,16 @@ CREATE TABLE `phpvms_aircraft` (
   `name` varchar(12) NOT NULL DEFAULT '',
   `fullname` varchar(50) NOT NULL DEFAULT '',
   `registration` varchar(30) NOT NULL,
+  `prod_yr` smallint(4) NOT NULL,
   `downloadlink` text NOT NULL,
   `imagelink` text NOT NULL,
+  `cruise` varchar(15) NOT NULL DEFAULT '0',
   `range` varchar(15) NOT NULL DEFAULT '0',
   `weight` varchar(15) NOT NULL DEFAULT '0',
-  `cruise` varchar(15) NOT NULL DEFAULT '0',
+  `mtow` varchar(15) NOT NULL DEFAULT '0',
+  `mzfw` varchar(15) NOT NULL DEFAULT '0',
+  `mlw` varchar(15) NOT NULL DEFAULT '0',
+  `maxfuel` varchar(15) NOT NULL DEFAULT '0',
   `maxpax` float NOT NULL DEFAULT '0',
   `maxcargo` float NOT NULL DEFAULT '0',
   `minrank` int(11) NOT NULL DEFAULT '0',
@@ -95,12 +100,18 @@ CREATE TABLE `phpvms_airlines` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `phpvms_airports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `icao` varchar(5) NOT NULL DEFAULT '',
+  `icao` varchar(4) NOT NULL DEFAULT '',
+  `iata` varchar(4) NOT NULL DEFAULT '',
   `name` text NOT NULL,
+  `city` varchar(50) NOT NULL DEFAULT '',
   `country` varchar(50) NOT NULL DEFAULT '',
+  `region` varchar(50) NOT NULL DEFAULT '',
+  `tz` varchar(50) NOT NULL DEFAULT '',
+  `elevation` int(11) NOT NULL DEFAULT '',
   `lat` float NOT NULL DEFAULT '0',
   `lng` float NOT NULL DEFAULT '0',
-  `hub` smallint(6) NOT NULL DEFAULT '0',
+  `hub` tinyint(1) NOT NULL DEFAULT '0',
+  `mxbase` tinyint(1) NOT NULL DEFAULT '0',
   `fuelprice` float NOT NULL DEFAULT '0',
   `chartlink` text NOT NULL,
   PRIMARY KEY (`id`),
@@ -133,6 +144,9 @@ CREATE TABLE `phpvms_bids` (
   `bidid` int(11) NOT NULL AUTO_INCREMENT,
   `pilotid` int(11) NOT NULL DEFAULT '0',
   `routeid` int(11) NOT NULL DEFAULT '0',
+  `aircraftid` int(11) NOT NULL DEFAULT '0',
+  `paxload` int(11) NOT NULL DEFAULT '0',
+  `cargoload` int(11) NOT NULL DEFAULT '0',
   `dateadded` date NOT NULL,
   PRIMARY KEY (`bidid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -264,6 +278,19 @@ CREATE TABLE `phpvms_ledger` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phpvms_loadfactor` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `demand` varchar(20) NOT NULL DEFAULT '',
+  `abbrev` varchar(10) NOT NULL DEFAULT '',
+  `low` tinyint(3) NOT NULL DEFAULT '0'
+  `high` tinyint(3) NOT NULL DEFAULT '0';
+  PRIMARY KEY (`id`),
+  KEY `pilot_id` (`pilotid`),
+  KEY `pirepid` (`pirepid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `phpvms_navdata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(7) NOT NULL,
@@ -320,7 +347,6 @@ CREATE TABLE `phpvms_pilots` (
   `hub` varchar(4) NOT NULL DEFAULT '',
   `password` varchar(255) NOT NULL DEFAULT '',
   `bgimage` varchar(30) NOT NULL DEFAULT '',
-  `lastlogin` date NOT NULL DEFAULT '1970-01-01',
   `totalflights` int(11) NOT NULL DEFAULT '0',
   `totalhours` float NOT NULL DEFAULT '0',
   `totalpay` float NOT NULL DEFAULT '0',
@@ -330,8 +356,11 @@ CREATE TABLE `phpvms_pilots` (
   `rank` varchar(32) NOT NULL DEFAULT 'New Hire',
   `ranklevel` int(11) NOT NULL DEFAULT '0',
   `confirmed` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `retired` smallint(6) NOT NULL DEFAULT '0',
+  `retired` tinyint(1) NOT NULL DEFAULT '0',
+  `staff` tinyint(1) NOT NULL DEFAULT '0',
+  `theme` tinyint(1) NOT NULL DEFAULT '0',
   `joindate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastlogin` date NOT NULL DEFAULT '1970-01-01',
   `lastpirep` datetime NOT NULL DEFAULT '1970-01-01 01:01:01',
   `lastip` varchar(25) DEFAULT '',
   `comment` text,
@@ -431,9 +460,11 @@ CREATE TABLE `phpvms_ranks` (
 CREATE TABLE `phpvms_schedules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` char(3) NOT NULL DEFAULT '',
+  `opf` char(3) NOT NULL DEFAULT '',
   `flightnum` varchar(10) NOT NULL DEFAULT '0',
   `depicao` varchar(4) NOT NULL DEFAULT '',
   `arricao` varchar(4) NOT NULL DEFAULT '',
+  `alticao` varchar(4) NOT NULL DEFAULT '',
   `route` text NOT NULL,
   `route_details` text NOT NULL,
   `aircraft` text NOT NULL,
@@ -448,12 +479,13 @@ CREATE TABLE `phpvms_schedules` (
   `week3` varchar(7) NOT NULL DEFAULT '0123456',
   `week4` varchar(7) NOT NULL DEFAULT '0123456',
   `price` float NOT NULL,
+  `demand` tinyint(1) NOT NULL DEFAULT '0';
   `payforflight` float NOT NULL DEFAULT '0',
   `flighttype` varchar(1) NOT NULL DEFAULT 'P',
-  `timesflown` int(11) NOT NULL DEFAULT '0',
   `notes` text NOT NULL,
   `enabled` int(11) NOT NULL DEFAULT '1',
   `bidid` int(11) NOT NULL DEFAULT '0',
+  `timesflown` int(11) NOT NULL DEFAULT '0',  
   PRIMARY KEY (`id`),
   KEY `depicao` (`depicao`),
   KEY `flightnum` (`flightnum`),
