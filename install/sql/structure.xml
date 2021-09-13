@@ -257,14 +257,14 @@
 	</table_structure>
 	<table_structure name="phpvms_pilots">
 		<field Field="pilotid" Type="int(11)" Null="NO" Key="PRI" Extra="auto_increment" Comment="" />
+		<field Field="uniqid" Type="varchar(25)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="firstname" Type="varchar(25)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="lastname" Type="varchar(25)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="email" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="code" Type="char(3)" Null="NO" Key="MUL" Default="" Extra="" Comment="" />
 		<field Field="location" Type="varchar(32)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="hub" Type="varchar(4)" Null="NO" Key="" Default="" Extra="" Comment="" />
-		<field Field="password" Type="varchar(32)" Null="NO" Key="" Default="" Extra="" Comment="" />
-		<field Field="salt" Type="varchar(32)" Null="NO" Key="" Default="" Extra="" Comment="" />
+		<field Field="password" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="bgimage" Type="varchar(30)" Null="NO" Key="" Default="" Extra="" Comment="" />
 		<field Field="lastlogin" Type="date" Null="NO" Key="" Default="1970-01-01" Extra="" Comment="" />
 		<field Field="totalflights" Type="int(11)" Null="NO" Key="" Default="0" Extra="" Comment="" />
